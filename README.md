@@ -1,70 +1,156 @@
-# Getting Started with Create React App
+# Code Review
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Most developers spend more time reading code than writing it, and thus, it is so important that we write code that other developers can easily understand.
 
-## Available Scripts
+We will learn more on code quality later, but in this workshop we are going to focus on code reviews, a tool that will allow us to:
 
-In the project directory, you can run:
+- Monitor the code and make sure we merge into production (the working application) working code that has no bugs
+- Make sure that the code is up to par and styled according to our team's guidelines
+- Propose better solutions and upgrades to new code introduced ot the system
+- Learn from other developers!
 
-### `npm start`
+## 🎯 Lesson Objectives
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+After this workshop, you will be able to:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Create a new `git branch` to structure code progress correctly
+- Create a proper pull-request (PR)
+- Review code efficiently
 
-### `npm test`
+## Managing The Code Base
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Before we start reviewing other developers' code, let's see how to properly manage our own code and how to create a pull-request so others can review our code.
 
-### `npm run build`
+To do that, we need to manage our code properly. Until now, you were probably working on the `main` (`master`) branch. But in a real work environment, it is very dangerous to work on the main branch, because merging new code does not go through proper code review.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+In order to allow proper code reviewing, we need to branch out of the main codebase. Branching is basically creating a parallel version of the code, on which we can make changes without changing the main version of the code. Once our changes are ready, we can merge them with the codebase:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+![branch git](https://www.nobledesktop.com/image/gitresources/git-branches-merge.png)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+We usually going to create a new branch that will have the name of the feature we are working on. To do that, write the following command:
 
-### `npm run eject`
+```bash
+> git checkout -b <name of the branch>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# for example
+> git checkout -b feature/new_user_cards
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Now, working on the code, you are not changing the main codebase directly! which is amazing! cause we can take risks, test and try different things without worrying that will ruin anything in the production application.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+We have 3 main categories of code-changes:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- new feature
+- bug fixes
+- refactoring (improving the code without changing anything on the users' side)
 
-## Learn More
+After finishing working on the new feature, we can commit and push it to remote:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+# Stage all files
+> git add .
+# Check if you added the right files
+> git status
+# Commit your changes
+> git commit -m"feat[user profile]: user can edit email"
+# Push the changes to remote
+> git push -u origin <name_of_branch>
+# after pushing the code for the first time, just:
+> git push
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Advanced branching
 
-### Code Splitting
+Usually, companies follow some guidelines on how to name branches and commits.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The most common way is to follow these guidelines:
+https://www.conventionalcommits.org/en/v1.0.0/
 
-### Analyzing the Bundle Size
+To put short, add to each branch and commit the following structure:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+# For COMMITS
+<type>[scope: optional]: <description>
 
-### Making a Progressive Web App
+# for examples:
+feature[profile page]: users can edit their emails
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+fix[login process]: removed required fields
 
-### Advanced Configuration
+refactor[fetch users]: users data is being filtered on backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```
 
-### Deployment
+For branches, we want to keep the names short by useful:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+feature/user_profile
 
-### `npm run build` fails to minify
+fix/add_email_editing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+refactor/creating_data_processing_class
+```
+
+## Creating Pull Requests
+
+Now, that we have our changes ready and tested in another branch, we can prepare it for merging.
+
+1. Push the branch to remote (if you haven't already).
+1. Go to Github, to the relevant repository
+1. You should see a notification that a new branch was open and that you can create a new pull request
+1. Press on "create a new pull request" button
+
+Before creating a pull request make sure that your code as up to par:
+
+- Did you use linters?
+- Did you use a formatter?
+- Did you checked that all functionality works?
+- Did you create tests and made sure to cover as many edge cases?
+
+## Pull Request Must Haves
+
+Every pull-request should have:
+
+- Title: short but with a general info about the changes (`Feature[user profile]: users can edit emails`)
+- Description
+- Assignee: usually the developer that opened the request
+- Reviewers: usually two or more reviewers are assigned to each request
+- Labels: often optional but can be a good tool to separate between fixes, documentation, features and so on...
+
+### Description
+
+The is the most important part. What you need to have in the description changes from company to company but usually consist of the following:
+
+1. **Overview**: What is this feature, which bug was fixed...
+2. **Changelog**: list of the changes made.
+3. **Resources**: links to requirements, design, planning, tasks, bug or documentation. Everything that will be relevant to understand the changes made.
+
+## Code Review
+
+### What it is NOT:
+
+- **Reviewing is NOT looking for bugs 🐞!** working.
+- **Reviewing is NOT tech design or planning!**, these happen before we start coding.
+
+### What it is
+
+Our main goal is to **improve the quality** of the code. So our comments will usually be:
+
+- A question about code functionality or decision
+- Suggestions to increase readability or clarity of code
+- Something the developer did well
+- Stating when you have difficulty understanding a block of code
+
+### Code Review Etiquette
+
+- Be courteous and respectful.
+- Be clear and helpful.
+- Explain your reasoning.
+- Balance giving explicit directions with just pointing out problems and letting the developer decide.
+
+## Now You!
+
+1. Navigate to the pull-request:
+2. Go to "files", highlight the relevant lines and add a comment
+
+❗**PLEASE DO NOT SUBMIT THE REVIEW, SO OTHERS CAN REVIEW THE SAME CODEBASE**❗
